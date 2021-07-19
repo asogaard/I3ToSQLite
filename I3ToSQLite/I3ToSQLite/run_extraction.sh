@@ -1,0 +1,1 @@
+python CreateTemporaryDatabases.py && python MergeTemporaryDatabases.py && exit
