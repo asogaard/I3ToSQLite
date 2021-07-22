@@ -1,13 +1,15 @@
 import os
 import pickle
+from I3ToSQLite import anchor
 
 
-def Build_Configuration(paths, outdir, workers, pulse_keys, db_name):
+def Build_Configuration(paths, outdir, workers, pulse_keys, db_name, gcd_rescue):
     dictionary = {'paths': paths,
                   'outdir': outdir,
                   'workers': workers,
                   'pulse_keys': pulse_keys,
-                  'db_name': db_name + '.db'}
+                  'db_name': db_name,
+                  'gcd_rescue': gcd_rescue}
     dictionary_path = outdir + '/%s/config'%db_name
     try:
         os.makedirs(dictionary_path)
@@ -23,38 +25,32 @@ def Build_Configuration(paths, outdir, workers, pulse_keys, db_name):
     with open('tmp/config/config.pkl', 'wb') as handle:
         pickle.dump(dictionary, handle, protocol=2)              
     return dictionary_path + '/config.pkl'
-
-def Write_Shell_Script(cvmfs_setup_path, cvmfs_shell_path):
-    CODE = "eval `%s` \n%s ./run_extraction.sh"%(cvmfs_setup_path,cvmfs_shell_path)
-    text_file = open("handler_test.sh", "w")
+def MakeDir():
+    try:
+        os.makedirs('tmp/coms')
+    except:
+        notimportant = 0
+def Write_Handler(cvmfs_setup_path, cvmfs_shell_path):
+    CODE = "eval `%s` \n%s ./tmp/coms/run_extraction.sh"%(cvmfs_setup_path,cvmfs_shell_path)
+    text_file = open("tmp/coms/handler.sh", "w")
     text_file.write(CODE)
     text_file.close()
-    os.system("chmod 755 handler_test.sh")
-    
-def CreateDatabase(paths, outdir, workers, cvmfs_setup_path, cvmfs_shell_path, db_name, pulse_keys):
-    configuration_path = Build_Configuration(paths, outdir, workers, pulse_keys,db_name)
-    Write_Shell_Script(cvmfs_setup_path, cvmfs_shell_path)
-    os.system('./handler_test.sh')
+    os.system("chmod 755 tmp/coms/handler.sh")
+
+def Write_Executer():
+    path = (anchor.__file__).split('anchor.py')[0]
+    CODE = "python %sCreateTemporaryDatabases.py && python %sMergeTemporaryDatabases.py && exit"%(path,path)
+    text_file = open("tmp/coms/run_extraction.sh", "w")
+    text_file.write(CODE)
+    text_file.close()
+    os.system("chmod 755 tmp/coms/run_extraction.sh")
+
+def CreateDatabase(paths, outdir, workers, cvmfs_setup_path, cvmfs_shell_path, db_name, pulse_keys, gcd_rescue):
+    configuration_path = Build_Configuration(paths, outdir, workers, pulse_keys,db_name, gcd_rescue)
+    MakeDir()
+    Write_Executer()
+    Write_Handler(cvmfs_setup_path, cvmfs_shell_path)
+    os.system('./tmp/coms/handler.sh')
 
 
-paths       = ['/groups/hep/pcs557/i3_workspace/test_i3/noise',
-                '/groups/hep/pcs557/i3_workspace/test_i3/genie',
-                '/groups/hep/pcs557/i3_workspace/test_i3/muongun']
-
-outdir      = '/groups/hep/pcs557/i3_workspace/test_i3/test_db'
-workers     = 5
-cvmfs_setup_path  = '/cvmfs/icecube.opensciencegrid.org/py2-v3.1.1/setup.sh'
-cvmfs_shell_path = '/cvmfs/icecube.opensciencegrid.org/users/Oscillation/software/oscNext_meta/releases/latest/build/env-shell.sh'
-db_name     = 'all_keys_test'
-pulse_keys  = ['SRTInIcePulses',
-                'SRTTWOfflinePulsesDC',
-                'SplitInIceDSTPulses',
-                'SplitInIcePulses',
-                'TWOfflinePulsesDC',
-                'L5_SANTA_DirectPulses',
-                'InIcePulses',
-                'IceTopDSTPulses',
-                'IceTopPulses']
-#pulse_keys  = ['SRTInIcePulses',
-#                'SplitInIcePulses']
 

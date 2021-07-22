@@ -20,7 +20,7 @@ def Contains_RetroReco(frame):
     except:
         return False
 def Build_Standard_Extraction():
-    standard_truths = {'energy_log10': 'MCInIcePrimary.energy',
+    standard_truths = {'energy': 'MCInIcePrimary.energy',
             'position_x': 'MCInIcePrimary.pos.x', 
             'position_y': 'MCInIcePrimary.pos.y', 
             'position_z': 'MCInIcePrimary.pos.z',
@@ -80,7 +80,7 @@ def Build_Blank_Extraction():
 def Build_RetroReco_Extraction():
     retro_extraction = {'azimuth_retro': 'frame["L7_reconstructed_azimuth"].value',
                         'time_retro': 'frame["L7_reconstructed_time"].value',
-                        'energy_log10_retro': 'frame["L7_reconstructed_total_energy"].value', 
+                        'energy_retro': 'frame["L7_reconstructed_total_energy"].value', 
                         'position_x_retro': 'frame["L7_reconstructed_vertex_x"].value', 
                         'position_y_retro': 'frame["L7_reconstructed_vertex_y"].value',
                         'position_z_retro': 'frame["L7_reconstructed_vertex_z"].value',
@@ -91,7 +91,7 @@ def Build_RetroReco_Extraction():
                         'position_z_sigma': 'frame["L7_retro_crs_prefit__z_sigma_tot"].value',
                         'time_sigma': 'frame["L7_retro_crs_prefit__time_sigma_tot"].value',
                         'zenith_sigma': 'frame["L7_retro_crs_prefit__zenith_sigma_tot"].value',
-                        'energy_log10_sigma': 'frame["L7_retro_crs_prefit__energy_sigma_tot"].value',
+                        'energy_sigma': 'frame["L7_retro_crs_prefit__energy_sigma_tot"].value',
                         'osc_weight': 'frame["I3MCWeightDict"]["weight"]',
                         'cascade_energy_retro': 'frame["L7_reconstructed_cascade_energy"].value',
                         'track_energy_retro': 'frame["L7_reconstructed_track_energy"].value',
@@ -160,7 +160,7 @@ def Extract_Features(frame, key, gcd_dict,calibration):
             pulses = data[om_key]
             for pulse in pulses:
                 charge.append(pulse.charge)
-                time.append(pulse.time) 
+                time.append(np.log(pulse.time)) 
                 width.append(pulse.width)
                 area.append(gcd_dict[om_key].area)  
                 rqe.append(frame["I3Calibration"].dom_cal[om_key].relative_dom_eff)
@@ -169,13 +169,13 @@ def Extract_Features(frame, key, gcd_dict,calibration):
                 z.append(gcd_dict[om_key].position.z)
         
     features = {'charge_log10': charge, 
-                'dom_time': time, 
+                'dom_time_log10': time, 
                 'dom_x': x, 
                 'dom_y': y, 
                 'dom_z': z,
                 'width' : width,
                 'pmt_area': area, 
-                'rqe': rqe}
+                'rde': rqe}
     return features
     
 
@@ -240,12 +240,9 @@ def WriteDicts(settings):
     gcd_count = 0
     for u  in range(0,len(input_files)):
         input_file = input_files[u]
-        print('loading gcd')
         gcd_dict, calibration = Load_GeoSpatial_Data(gcd_files[u])
-        print(input_file)
         i3_file = dataio.I3File(input_file, "r")
-        print('Using %s for '%gcd_files[u].split('/')[-1])
-        print('for i3-file %s'%input_file.split('/')[-1])
+        print('Reading %s'%input_file.split('/')[-1])
         gcd_count  +=1
     
         while i3_file.more() :
@@ -290,7 +287,7 @@ def WriteDicts(settings):
                     truth_big   = pd.DataFrame()
                     retro_big   = pd.DataFrame()
                     output_count +=1
-        print('WORKER %s : %s/%s'%(id,file_counter,len(input_files)))
+        print('WORKER %s : %s/%s'%(id,file_counter +1,len(input_files)))
         file_counter +=1
     if (len(feature_big) > 0):
         ### ADD STUFF HERE
@@ -305,11 +302,9 @@ def WriteDicts(settings):
         truth_big   = pd.DataFrame()
         retro_big   = pd.DataFrame()
 
-def FindFiles(paths,gcd_rescue = None, extensions = None):
+def FindFiles(paths,outdir,db_name,gcd_rescue = None, extensions = None):
     if extensions == None:
         extensions = ("/*.i3.bz2","/*.zst","/*.gz")
-    if gcd_rescue == None:
-        gcd_rescue = '/groups/icecube/stuttard/data/oscNext/pass2/gcd/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz'
     input_files_mid = []
     input_files = []
     files = []
@@ -341,7 +336,15 @@ def FindFiles(paths,gcd_rescue = None, extensions = None):
         gcd_files.extend(gcd_files_mid)
         gcd_files_mid = []
         input_files_mid = []
+    
+    Save_Filenames(input_files, outdir, db_name)
+
     return input_files, gcd_files
+def Save_Filenames(input_files,outdir, db_name):
+    input_files = pd.DataFrame(input_files)
+    input_files.columns = ['filename']
+    input_files.to_csv(outdir + '/%s/config/i3files.csv'%db_name)
+    return
 
 def CreateOutDirectory(outdir):
     try:
@@ -370,6 +373,7 @@ def Extract_Config():
     pulse_keys = PickleCleaner(config['pulse_keys'])
    
     db_name = str(config['db_name'])
+    gcd_rescue = str(config['gcd_rescue'])
     try:
         max_dictionary_size = int(config['max_dictionary_size'])
     except:
@@ -379,7 +383,7 @@ def Extract_Config():
         
     except:
         custom_truth    = None
-    return paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth
+    return paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth, gcd_rescue
 def Transmit_Start_Time(start_time,config_path):
     with open(config_path, 'rb') as handle:
         config = pickle.load(handle)
@@ -387,18 +391,17 @@ def Transmit_Start_Time(start_time,config_path):
     with open(config_path , 'wb') as handle:
         pickle.dump(config, handle, protocol=2)  
     return
-def Exit_CVMFS():
-    os.system('exit')
-    return
-def CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,config_path, start_time,db_name,max_dictionary_size = 10000, custom_truth = None):
+def CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,config_path, start_time,db_name,gcd_rescue,max_dictionary_size = 10000, custom_truth = None):
     if __name__ == "__main__" :
         start_time = time.time()    
-
-        input_files, gcd_files = FindFiles(paths)
+        directory_exists = CreateOutDirectory(outdir + '/%s/tmp'%db_name)
+        input_files, gcd_files = FindFiles(paths, outdir,db_name,gcd_rescue)
         print('gcd files: %s'%len(gcd_files))
         print('i3 files: %s'%len(input_files))
 
-        directory_exists = CreateOutDirectory(outdir + '/%s/tmp'%db_name)
+        if workers > len(input_files):
+            workers = len(input_files)
+        
 
         # SETTINGS
         settings = []
@@ -415,20 +418,12 @@ def CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,config_path, sta
         p.close()
         p.join()
         Transmit_Start_Time(start_time, config_path)
-        #Exit_CVMFS()
-        #print('Job Complete! Time Elapsed: %s min' %((time.time() - start_time)/60))
 
-#parser = argparse.ArgumentParser()
-#parser.add_argument('-config', '--config', type = str, required = True)
-#args = parser.parse_args()
-
-    
 
 start_time = time.time()
 
-paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth = Extract_Config()
-print(paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth)
-CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,'tmp/config/config.pkl', start_time,db_name, max_dictionary_size, custom_truth)
+paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth, gcd_rescue = Extract_Config()
+CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,'tmp/config/config.pkl', start_time,db_name,gcd_rescue, max_dictionary_size, custom_truth)
 
 
 

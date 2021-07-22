@@ -5,6 +5,7 @@ import os
 import sqlite3
 import time
 import pickle
+from tqdm import tqdm
 
 def fetch_temps(path):
     out = []
@@ -51,7 +52,6 @@ def Extract_Column_Names(tmp_path, db_files, keys):
                 retro_query = 'select * from RetroReco limit 1'
                 retro_columns = pd.read_sql(retro_query,con).columns
             if len(retro_columns)>0:
-                print(retro_columns)
                 break
         except:
             retro_columns = []
@@ -61,7 +61,7 @@ def Extract_Column_Names(tmp_path, db_files, keys):
     return truth_columns, pulse_map_columns, retro_columns
 
 def Run_SQL_Code(database, CODE):
-    conn = sqlite3.connect(database)
+    conn = sqlite3.connect(database + '.db')
     c = conn.cursor()
     c.executescript(CODE)
     c.close()  
@@ -99,7 +99,7 @@ def CreateTable(database,table_name, columns, is_pulse_map = False):
         try:
             Attach_Index(database,table_name)
         except:
-            print('index already exists')
+            notimportant = 0
     return
 
 def Create_Empty_Tables(database,pulse_map_keys,truth_columns, pulse_map_columns, retro_columns):
@@ -107,7 +107,6 @@ def Create_Empty_Tables(database,pulse_map_keys,truth_columns, pulse_map_columns
         # Creates the pulse map tables
         print('Creating Empty %s Table'%pulse_map_key)
         CreateTable(database, pulse_map_key,pulse_map_columns[pulse_map_key], is_pulse_map = True)
-        print('done with %s'%pulse_map_key)
     print('Creating Empty Truth Table')
     CreateTable(database, 'truth', truth_columns, is_pulse_map = False) # Creates the truth table containing primary particle attributes and RetroReco reconstructions
     print('Creating Empty RetroReco Table')
@@ -115,13 +114,13 @@ def Create_Empty_Tables(database,pulse_map_keys,truth_columns, pulse_map_columns
     return
 
 def Submit_Truth(database, truth):
-    engine_main = sqlalchemy.create_engine('sqlite:///' + database)
+    engine_main = sqlalchemy.create_engine('sqlite:///' + database + '.db')
     truth.to_sql('truth',engine_main,index= False, if_exists = 'append')
     engine_main.dispose()
     return  
 
 def Submit_Pulse_Maps(database, pulse_maps):
-    engine_main = sqlalchemy.create_engine('sqlite:///' + database)
+    engine_main = sqlalchemy.create_engine('sqlite:///' + database + '.db')
     for pulse_map in pulse_maps.keys():
         pulse_maps[pulse_map].to_sql(pulse_map, engine_main,index= False, if_exists = 'append')
     engine_main.dispose()
@@ -129,15 +128,16 @@ def Submit_Pulse_Maps(database, pulse_maps):
 
 def Submit_Retro(database, retro):
     if len(retro)>0:
-        engine_main = sqlalchemy.create_engine('sqlite:///' + database)
+        engine_main = sqlalchemy.create_engine('sqlite:///' + database + '.db')
         retro.to_sql('RetroReco',engine_main,index= False, if_exists = 'append')
         engine_main.dispose()
     return  
 
 def Merge_Temporary_Databases(database, db_files, path_to_tmp,pulse_map_keys):
     file_counter = 1
-    for file in db_files:
-        print('Extracting and Submitting %s ( %s / %s)'%(file,file_counter, len(db_files)))
+    for i in tqdm(range(len(db_files)), colour = 'green'):
+        file = db_files[i]
+        #print('Extracting and Submitting %s ( %s / %s)'%(file,file_counter, len(db_files)))
         truth, pulse_maps, retro = Extract_Everything(path_to_tmp + '/'  + file,pulse_map_keys)
         Submit_Truth(database,truth)
         Submit_Pulse_Maps(database, pulse_maps)
@@ -182,27 +182,22 @@ def CreateDirectory(dir):
         return False
     except:
         return True
-
+def Print_Message():
+    print('-----------------')
+    print('MERGING DATABASES')
+    print('-----------------')
 def CreateDatabase(database_name,outdir, pulse_map_keys):
     path_tmp = outdir + '/' + database_name + '/tmp'
     database_path = outdir + '/' + database_name + '/' + database_name
     directory_exists = CreateDirectory(outdir)
     db_files = fetch_temps(path_tmp)
+    Print_Message()
     print('Found %s .db-files in %s'%(len(db_files),path_tmp))
     truth_columns, pulse_map_columns, retro_columns = Extract_Column_Names(path_tmp, db_files, pulse_map_keys)
     Create_Empty_Tables(database_path,pulse_map_keys, truth_columns, pulse_map_columns, retro_columns)
     Merge_Temporary_Databases(database_path, db_files, path_tmp, pulse_map_keys)
     os.system('rm -r %s'%path_tmp)
     return
-
-#parser = argparse.ArgumentParser()
-#parser.add_argument("-path", "--path", type=str, required=True)
-#parser.add_argument("-outdir", "--outdir", type=str, required=True)
-#parser.add_argument("-db_name", "--db_name", type=str, required=True)
-#parser.add_argument("-pulse_maps","--pulse_maps", type = list, required = True)
-#parser.add_argument("-start_time", "--start_time", type = float, required = True)
-#parser.add_argument("-config", "--config", type = str, required = True)
-#args = parser.parse_args()
 
 
 paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth, start_time = Extract_Config()
