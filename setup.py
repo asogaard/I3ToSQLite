@@ -2,7 +2,7 @@ from setuptools import setup
 import setuptools
 setup(
     name='I3ToSQLite',
-    version='0.1.17',    
+    version='0.1.19',    
     description='An unoffical I3-file to SQLite database converter.',
     url='https://github.com/RasmusOrsoe/I3ToSQLite',
     author='Rasmus F. Ørsøe',

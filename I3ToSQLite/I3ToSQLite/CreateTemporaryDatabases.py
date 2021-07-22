@@ -77,7 +77,7 @@ def Build_Blank_Extraction():
             'SubEventID': 'SubEventID'}
     return blank_extraction
 
-def Build_RetroReco_Extraction():
+def Build_RetroReco_Extraction(is_mc):
     retro_extraction = {'azimuth_retro': 'frame["L7_reconstructed_azimuth"].value',
                         'time_retro': 'frame["L7_reconstructed_time"].value',
                         'energy_retro': 'frame["L7_reconstructed_total_energy"].value', 
@@ -92,19 +92,22 @@ def Build_RetroReco_Extraction():
                         'time_sigma': 'frame["L7_retro_crs_prefit__time_sigma_tot"].value',
                         'zenith_sigma': 'frame["L7_retro_crs_prefit__zenith_sigma_tot"].value',
                         'energy_sigma': 'frame["L7_retro_crs_prefit__energy_sigma_tot"].value',
-                        'osc_weight': 'frame["I3MCWeightDict"]["weight"]',
                         'cascade_energy_retro': 'frame["L7_reconstructed_cascade_energy"].value',
                         'track_energy_retro': 'frame["L7_reconstructed_track_energy"].value',
                         'track_length_retro': 'frame["L7_reconstructed_track_length"].value',
                         'lvl7_probnu': 'frame["L7_MuonClassifier_FullSky_ProbNu"].value',
                         'lvl4_probnu': 'frame["L4_MuonClassifier_Data_ProbNu"].value',
-                        'lvl7_prob_track': 'frame["L7_PIDClassifier_FullSky_ProbTrack"].value' }    
+                        'lvl7_prob_track': 'frame["L7_PIDClassifier_FullSky_ProbTrack"].value'}
+
+    if is_mc:
+        retro_extraction['osc_weight'] = 'frame["I3MCWeightDict"]["weight"]'    
     return retro_extraction
 def Extract_Retro(frame):
     contains_retro = Contains_RetroReco(frame)
+    is_mc = is_montecarlo(frame)
     retro = {}
     if contains_retro:
-        retro_extraction = Build_RetroReco_Extraction()
+        retro_extraction = Build_RetroReco_Extraction(is_mc)
         for retro_variable in retro_extraction.keys():
             retro[retro_variable] = eval(retro_extraction[retro_variable]) 
     return retro
@@ -438,7 +441,6 @@ def CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,config_path, sta
         if workers > len(input_files):
             workers = len(input_files)
         
-
         # SETTINGS
         settings = []
         event_nos = np.array_split(np.arange(0,99999999,1),workers) #Notice that this choice means event_no is NOT unique between different databases.
