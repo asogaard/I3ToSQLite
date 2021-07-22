@@ -302,40 +302,76 @@ def WriteDicts(settings):
         truth_big   = pd.DataFrame()
         retro_big   = pd.DataFrame()
 
-def FindFiles(paths,outdir,db_name,gcd_rescue = None, extensions = None):
+def IsI3(file):
+    if 'gcd' in file.lower():
+        return False
+    elif 'geo' in file.lower():
+        return False
+    else:
+        return True
+def HasExtension(file, extensions):
+    check = 0
+    for extension in extensions:
+        if extension in file:
+            check +=1
+    if check >0:
+        return True
+    else:
+        return False
+
+def WalkDirectory(dir, extensions):
+    files_list = []
+    GCD_list   = []
+    root,folders,root_files = next(os.walk(dir))
+    gcds_root = []
+    gcd_root = None
+    i3files_root = []
+    for file in root_files:
+        if HasExtension(file, extensions):
+            if IsI3(file):
+                i3files_root.append(os.path.join(root,file))
+            else:
+                gcd_root = os.path.join(root,file)
+                gcds_root.append(os.path.join(root,file))
+    if gcd_root == None:
+        gcd_root = gcd_rescue
+    for k in range(len(i3files_root) - len(gcds_root)):
+        gcds_root.append(gcd_root)
+    files_list.extend(i3files_root)
+    GCD_list.extend(gcds_root)
+    for folder in folders:
+        sub_root, sub_folders, sub_folder_files = next(os.walk(os.path.join(root,folder)))
+        gcds_folder = []
+        gcd_folder = None
+        i3files_folder = []
+        for sub_folder_file in sub_folder_files:
+            if HasExtension(sub_folder_file, extensions):
+                if IsI3(sub_folder_file):
+                    i3files_folder.append(os.path.join(sub_root,sub_folder_file))
+                else:
+                    gcd_folder = os.path.join(sub_root,sub_folder_file)
+                    gcds_folder.append(os.path.join(sub_root,sub_folder_file))
+        if gcd_folder == None:
+            gcd_folder = gcd_rescue
+        for k in range(len(i3files_folder) - len(gcds_folder)):
+            gcds_folder.append(gcd_folder)
+        files_list.extend(i3files_folder)
+        GCD_list.extend(gcds_folder)
+    return files_list, GCD_list
+
+def FindFiles(paths,outdir,db_name,gcd_rescue, extensions = None):
     if extensions == None:
-        extensions = ("/*.i3.bz2","/*.zst","/*.gz")
+        extensions = ("i3.bz2",".zst",".gz")
     input_files_mid = []
     input_files = []
     files = []
     gcd_files_mid = []
     gcd_files = []
-
     for path in paths:
-        for extension in extensions:
-            mid = glob.glob(path + extension)
-            if mid != []:
-                for file in mid:
-                    if 'gcd' in file:
-                        gcd_file = file
-                    if 'GCD' in file:
-                        gcd_file = file
-                    if 'geo' in file:
-                        gcd_file = file
-                    if 'Geo' in file:
-                        gcd_file = file
-                    else:
-                        input_files_mid.append(file)
-        try:
-             print(gcd_file)
-        except:
-            gcd_file = gcd_rescue
-        for k in range(0,len(input_files_mid)):
-            gcd_files_mid.append(gcd_file)
+        input_files_mid, gcd_files_mid = WalkDirectory(path, extensions)
         input_files.extend(input_files_mid)
         gcd_files.extend(gcd_files_mid)
-        gcd_files_mid = []
-        input_files_mid = []
+
     
     Save_Filenames(input_files, outdir, db_name)
 
