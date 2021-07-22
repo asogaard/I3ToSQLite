@@ -9,9 +9,11 @@ import pandas as pd
 from sqlalchemy import create_engine
 import sqlalchemy
 import time
-import os
-from multiprocessing import Pool
+from multiprocessing import Pool, RLock,freeze_support
 import pickle
+from tqdm import tqdm, trange
+
+icetray.I3Logger.global_logger = icetray.I3NullLogger()
 
 def Contains_RetroReco(frame):
     try:
@@ -143,7 +145,7 @@ def Extract_Features(frame, key, gcd_dict,calibration):
     x       = []
     y       = []
     z       = []
-    if 'I3MCTree' in frame.keys() and key in frame.keys():
+    if key in frame.keys():
         data    = frame[key]
         try:
             om_keys = data.keys()
@@ -163,7 +165,7 @@ def Extract_Features(frame, key, gcd_dict,calibration):
             pulses = data[om_key]
             for pulse in pulses:
                 charge.append(pulse.charge)
-                time.append(np.log(pulse.time)) 
+                time.append(pulse.time) 
                 width.append(pulse.width)
                 area.append(gcd_dict[om_key].area)  
                 rqe.append(frame["I3Calibration"].dom_cal[om_key].relative_dom_eff)
@@ -171,8 +173,8 @@ def Extract_Features(frame, key, gcd_dict,calibration):
                 y.append(gcd_dict[om_key].position.y)
                 z.append(gcd_dict[om_key].position.z)
         
-    features = {'charge_log10': charge, 
-                'dom_time_log10': time, 
+    features = {'charge': charge, 
+                'dom_time': time, 
                 'dom_x': x, 
                 'dom_y': y, 
                 'dom_z': z,
@@ -241,11 +243,12 @@ def WriteDicts(settings):
     file_counter = 0
     output_count = 0
     gcd_count = 0
-    for u  in range(0,len(input_files)):
+    #pbar = tqdm(total=len(input_files), colour = 'green', desc = 'WORKER %s'%id, position = int(id))
+    for u  in trange(len(input_files), desc = 'WORKER %s'%id, position = int(id), colour = 'green' ):
         input_file = input_files[u]
         gcd_dict, calibration = Load_GeoSpatial_Data(gcd_files[u])
         i3_file = dataio.I3File(input_file, "r")
-        print('Reading %s'%input_file.split('/')[-1])
+        #print('Reading %s'%input_file.split('/')[-1])
         gcd_count  +=1
     
         while i3_file.more() :
@@ -290,8 +293,8 @@ def WriteDicts(settings):
                     truth_big   = pd.DataFrame()
                     retro_big   = pd.DataFrame()
                     output_count +=1
-        print('WORKER %s : %s/%s'%(id,file_counter +1,len(input_files)))
         file_counter +=1
+        #pbar.update(1)
     if (len(feature_big) > 0):
         ### ADD STUFF HERE
         engine = sqlalchemy.create_engine('sqlite:///'+outdir +  '/%s/tmp/worker-%s-%s.db'%(db_name,id,output_count))
@@ -304,6 +307,7 @@ def WriteDicts(settings):
         feature_big = {} 
         truth_big   = pd.DataFrame()
         retro_big   = pd.DataFrame()
+    
 
 def IsI3(file):
     if 'gcd' in file.lower():
@@ -430,14 +434,17 @@ def Transmit_Start_Time(start_time,config_path):
     with open(config_path , 'wb') as handle:
         pickle.dump(config, handle, protocol=2)  
     return
+
+def PrintMessage(workers, input_files):
+    print('Found %s I3 files!'%len(input_files))
+    print('----------------------')
+    print('READING FILES IN %s PARALLEL SESSIONS'%workers)
+    print('----------------------')
 def CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,config_path, start_time,db_name,gcd_rescue,max_dictionary_size = 10000, custom_truth = None):
     if __name__ == "__main__" :
         start_time = time.time()    
         directory_exists = CreateOutDirectory(outdir + '/%s/tmp'%db_name)
         input_files, gcd_files = FindFiles(paths, outdir,db_name,gcd_rescue)
-        print('gcd files: %s'%len(gcd_files))
-        print('i3 files: %s'%len(input_files))
-
         if workers > len(input_files):
             workers = len(input_files)
         
@@ -450,9 +457,9 @@ def CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,config_path, sta
         for i in range(0,workers):
             settings.append([file_list[i],str(i),gcd_file_list[i],outdir,max_dictionary_size,event_nos[i], pulse_keys, custom_truth, db_name])
         #WriteDicts(settings[0])
-               
-        p = Pool(processes = workers)
-        p.map(WriteDicts, settings)   
+        PrintMessage(workers, input_files)       
+        p = Pool(processes = workers, initializer=tqdm.set_lock, initargs=(tqdm.get_lock(),))
+        p.map_async(WriteDicts, settings)
         p.close()
         p.join()
         Transmit_Start_Time(start_time, config_path)

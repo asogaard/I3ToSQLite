@@ -135,9 +135,9 @@ def Submit_Retro(database, retro):
 
 def Merge_Temporary_Databases(database, db_files, path_to_tmp,pulse_map_keys):
     file_counter = 1
+    Print_Message()
     for i in tqdm(range(len(db_files)), colour = 'green'):
         file = db_files[i]
-        #print('Extracting and Submitting %s ( %s / %s)'%(file,file_counter, len(db_files)))
         truth, pulse_maps, retro = Extract_Everything(path_to_tmp + '/'  + file,pulse_map_keys)
         Submit_Truth(database,truth)
         Submit_Pulse_Maps(database, pulse_maps)
@@ -191,7 +191,6 @@ def CreateDatabase(database_name,outdir, pulse_map_keys):
     database_path = outdir + '/' + database_name + '/' + database_name
     directory_exists = CreateDirectory(outdir)
     db_files = fetch_temps(path_tmp)
-    Print_Message()
     print('Found %s .db-files in %s'%(len(db_files),path_tmp))
     truth_columns, pulse_map_columns, retro_columns = Extract_Column_Names(path_tmp, db_files, pulse_map_keys)
     Create_Empty_Tables(database_path,pulse_map_keys, truth_columns, pulse_map_columns, retro_columns)
