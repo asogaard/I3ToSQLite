@@ -3,13 +3,14 @@ import pickle
 from I3ToSQLite import anchor
 
 
-def Build_Configuration(paths, outdir, workers, pulse_keys, db_name, gcd_rescue):
+def Build_Configuration(paths, outdir, workers, pulse_keys, db_name, gcd_rescue, verbose):
     dictionary = {'paths': paths,
                   'outdir': outdir,
                   'workers': workers,
                   'pulse_keys': pulse_keys,
                   'db_name': db_name,
-                  'gcd_rescue': gcd_rescue}
+                  'gcd_rescue': gcd_rescue,
+                  'verbose': verbose}
     dictionary_path = outdir + '/%s/config'%db_name
     try:
         os.makedirs(dictionary_path)
@@ -45,8 +46,8 @@ def Write_Executer():
     text_file.close()
     os.system("chmod 755 tmp/coms/run_extraction.sh")
 
-def CreateDatabase(paths, outdir, workers, cvmfs_setup_path, cvmfs_shell_path, db_name, pulse_keys, gcd_rescue):
-    configuration_path = Build_Configuration(paths, outdir, workers, pulse_keys,db_name, gcd_rescue)
+def CreateDatabase(paths, outdir, workers, cvmfs_setup_path, cvmfs_shell_path, db_name, pulse_keys, gcd_rescue, verbose = 1):
+    configuration_path = Build_Configuration(paths, outdir, workers, pulse_keys,db_name, gcd_rescue, verbose)
     MakeDir()
     Write_Executer()
     Write_Handler(cvmfs_setup_path, cvmfs_shell_path)

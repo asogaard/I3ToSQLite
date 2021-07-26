@@ -1,12 +1,11 @@
+import os
 from sqlalchemy import create_engine
 import sqlalchemy
 import pandas as pd
-import os
 import sqlite3
 import time
 import pickle
 from tqdm import tqdm
-
 def fetch_temps(path):
     out = []
     files = os.listdir(path)
