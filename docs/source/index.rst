@@ -1,11 +1,12 @@
-$project
+I3ToSQLite
 ========
 
 $project will solve your problem of where to start with documentation,
 by providing a basic explanation of how to do it easily.
 
-Look how easy it is to use:
-
+A minimalistic example:
+.. code-block:: python
+   :caption: minimalitic use example
     from I3ToSQLite.Tools import CreateDatabase
 
    paths             = ['/groups/hep/pcs557/i3_workspace/data/real_data/level7_v02.00/IC86.11']
