@@ -1,146 +1,613 @@
 
+
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>I3ToSQLite &mdash; I3ToSQLite 0.0.1 documentation</title>
+  
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>I3ToSQLite &#8212; I3ToSQLite 0.0.1 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
    
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
           
 
-          <div class="body" role="main">
+          
+            <a href="#" class="icon icon-home"> I3ToSQLite
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">I3ToSQLite</a><ul>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#why-sqlite">Why SQLite?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#createdatabase">CreateDatabase():</a></li>
+<li><a class="reference internal" href="#a-minimalistic-database-creation-example">A minimalistic database creation example:</a></li>
+<li><a class="reference internal" href="#the-event-number">The Event Number:</a></li>
+<li><a class="reference internal" href="#example-usage-of-a-database">Example usage of a database:</a></li>
+<li><a class="reference internal" href="#the-standard-truth-extraction">The standard truth extraction:</a></li>
+<li><a class="reference internal" href="#the-standard-pulse-extraction">The standard pulse extraction:</a></li>
+<li><a class="reference internal" href="#the-standard-retroreco-extraction">The standard RetroReco extraction:</a></li>
+<li><a class="reference internal" href="#contribute">Contribute</a></li>
+<li><a class="reference internal" href="#support">Support</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">I3ToSQLite</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>I3ToSQLite</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="i3tosqlite">
 <h1>I3ToSQLite<a class="headerlink" href="#i3tosqlite" title="Permalink to this headline">¶</a></h1>
-<p>$project will solve your problem of where to start with documentation,
-by providing a basic explanation of how to do it easily.</p>
-<p>A minimalistic example:
-.. highlight:: python</p>
-<blockquote>
-<div><p>from I3ToSQLite.Tools import CreateDatabase</p>
-<p>paths             = [‘/groups/hep/pcs557/i3_workspace/data/real_data/level7_v02.00/IC86.11’]
-db_name           = ‘my_database’
-outdir            = ‘~/my_outdir’
-workers           = 42
-cvmfs_setup_path  = ‘/cvmfs/icecube.opensciencegrid.org/py2-v3.1.1/setup.sh’
-cvmfs_shell_path = ‘/cvmfs/icecube.opensciencegrid.org/users/Oscillation/software/oscNext_meta/releases/latest/build/env-shell.sh’
-gcd_rescue = ‘/groups/icecube/stuttard/data/oscNext/pass2/gcd/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz’
-pulse_keys  = [‘SRTInIcePulses’]</p>
-<p>CreateDatabase(paths, outdir, workers, cvmfs_setup_path, cvmfs_shell_path, db_name,pulse_keys, gcd_rescue, verbose = 1)</p>
-</div></blockquote>
+<p>I3ToSQLite is an unofficial IceCube i3-file converter that exports the desired contents of the i3 files to SQLite format.</p>
 <div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Be awesome</p></li>
-<li><p>Make things faster</p></li>
+<li><p>Multiprocessed i3-file reading</p></li>
+<li><p>Memory efficient database creation</p></li>
+<li><p>Simple usage</p></li>
+<li><p>Supports multiple pulse maps</p></li>
+<li><p>Allows for easy back-tracking to original PFrame if needed</p></li>
 </ul>
 </div>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>Install $project by running:</p>
+<div class="section" id="why-sqlite">
+<h2>Why SQLite?<a class="headerlink" href="#why-sqlite" title="Permalink to this headline">¶</a></h2>
+<p>SQlite is a robust, well understood software library that a quite common choice for data storage in the data science community. Specifically for reconstruction purposes, the format is interesting because:</p>
 <blockquote>
-<div><p>install project</p>
+<div><ul class="simple">
+<li><p>Because the database is indexed, you only load the data you query into memory.</p></li>
+<li><p>Query times happens in log(n), where n is the amount of rows in the database table you’re querying, making query execution times fast enough for the database to be used direcly in your preprocessing, or as a dataset in your reconstruction.</p></li>
+<li><p>Once the database is created, users do not need to understand anything related to IceTray, which in turn means newcommers have more time to work on their analysis.</p></li>
+<li><p>The low memory footprint of the database makes it portable to personal devices.</p></li>
+<li><p>A SQLite database can recieve multiple queries at the same time, which makes it an ideal format for a standardized dataset that is centrally stored.</p></li>
+</ul>
 </div></blockquote>
 </div>
-<div class="section" id="contribute">
-<h2>Contribute<a class="headerlink" href="#contribute" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>Install I3ToSQLite by running:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span>pip install I3ToSQLite
+</pre></div>
+</div>
+</div>
+<div class="section" id="createdatabase">
+<h1>CreateDatabase():<a class="headerlink" href="#createdatabase" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="CreateDatabase">
+<span class="sig-name descname"><span class="pre">CreateDatabase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cvmfs_setup_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cvmfs_shell_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pulse_keys</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gcd_rescue</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CreateDatabase" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="simple">
+<dt></dt><dd><p>Reads the i3-files in <em>paths</em> through the CVMFS version and shell specified in <em>cvmfs_setup_path</em> and <em>cvmfs_shell_path</em>. The i3 files are converted into a SQLite database stored at <em>outdir</em>/<em>db_name</em>/<em>db_name</em>.db.</p>
+</dd>
+</dl>
+<ul>
+<li><p>paths : list | a list of paths to directories containing the i3 files you wish to convert.</p>
+<blockquote>
+<div><blockquote>
+<div><p><em>example</em>: [‘~/genie/level7_v02.00’,’~/muongun/level7_v02.00’]</p>
+</div></blockquote>
+<p><strong>Please Note</strong>: Currently, only the specified directories and two-level sub directories are scanned. E.g. specifying paths = [<em>genie/level7_v02.00</em>] means extracting everything in  <em>genie/level7_v02.00/runid/subrunid</em> as per oscNext IceCube convention. If your files are located beyond the second level subdirectories, you’ll have to adjust your file structure.</p>
+</div></blockquote>
+</li>
+<li><p>outdir  : string | a string specifying the directory to which the database will be written.</p></li>
+<li><dl class="simple">
+<dt>workers<span class="classifier">integer | the number of cores used to read i3 files. Must be positive and non-zero.</span></dt><dd><p>Note that <em>workers</em> will default to the number of i3 files in the specified paths if the amount of allocated cores are larger than the amount of i3 files in the selected paths.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cvmfs_setup_path<span class="classifier">string | path to your cvmfs setup.</span></dt><dd><p><em>example</em>: cvmfs_setup_path = ‘/cvmfs/icecube.opensciencegrid.org/py2-v3.1.1/setup.sh’</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cvmfs_shell_path<span class="classifier">string | path to your cvmfs shell.</span></dt><dd><p><em>example</em>: cvmfs_shell_path = ‘/cvmfs/icecube.opensciencegrid.org/users/Oscillation/software/oscNext_meta/releases/latest/build/env-shell.sh’</p>
+</dd>
+</dl>
+</li>
+<li><p>db_name : string | the name of your database. Please omit ‘.db’ or other extensions.</p></li>
+<li><dl>
+<dt>pulse_keys<span class="classifier">list |  a list of i3 keys specifying the pulse maps that you want to extract.</span></dt><dd><blockquote>
+<div><p><em>example</em> : <em>pulse_keys  = [‘SRTInIcePulses’, ‘SplitInIcePulses’]</em></p>
+</div></blockquote>
+<p><strong>Please Note</strong>: Extracting the pulse maps is the most expensive task in the extraction. Therefore, if you wish to speed up the process, limit yourself to only the pulse maps you need. Also; the extraction simply skips any pulse maps not present in the PFrames. It wont throw an error!</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>gcd_rescue<span class="classifier">string | a path to a gcd file.</span></dt><dd><p><strong>Please Note</strong>: Usually both real data and mc data have GCD-files in the subrun folders. Therefore, the extraction checks every subfolder for the presence of a GCD file and uses it to extract the pulse information, but should there not be one, the extraction will default to the <em>gcd_rescue</em>.</p>
+</dd>
+</dl>
+</li>
+<li><p>verbose : integer | the verbosity of the multiprocessed i3 file extraction. verbose = 0 means no prints, verbose &gt; 0 currently gives full information.</p></li>
+</ul>
+</div>
+<div class="section" id="a-minimalistic-database-creation-example">
+<h1>A minimalistic database creation example:<a class="headerlink" href="#a-minimalistic-database-creation-example" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="kn">from</span> <span class="nn">I3ToSQLite.Tools</span> <span class="kn">import</span> <span class="n">CreateDatabase</span>
+<span class="lineno"> 2 </span>
+<span class="lineno"> 3 </span><span class="n">paths</span>             <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;~/level7_v02.00/IC86.11&#39;</span><span class="p">]</span>
+<span class="lineno"> 4 </span><span class="n">db_name</span>           <span class="o">=</span> <span class="s1">&#39;my_database&#39;</span>
+<span class="lineno"> 5 </span><span class="n">outdir</span>            <span class="o">=</span> <span class="s1">&#39;~/my_outdir&#39;</span>
+<span class="lineno"> 6 </span><span class="n">workers</span>           <span class="o">=</span> <span class="mi">42</span>
+<span class="lineno"> 7 </span><span class="n">cvmfs_setup_path</span>  <span class="o">=</span> <span class="s1">&#39;some_path/setup.sh&#39;</span>
+<span class="lineno"> 8 </span><span class="n">cvmfs_shell_path</span> <span class="o">=</span> <span class="s1">&#39;some_path/env-shell.sh&#39;</span>
+<span class="lineno"> 9 </span><span class="n">gcd_rescue</span> <span class="o">=</span> <span class="s1">&#39;~/some_GCD.i3.gz&#39;</span>
+<span class="lineno">10 </span><span class="n">pulse_keys</span>  <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;SRTInIcePulses&#39;</span><span class="p">]</span>
+<span class="lineno">11 </span>
+<span class="lineno">12 </span><span class="n">CreateDatabase</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">workers</span><span class="p">,</span> <span class="n">cvmfs_setup_path</span><span class="p">,</span> <span class="n">cvmfs_shell_path</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span><span class="n">pulse_keys</span><span class="p">,</span> <span class="n">gcd_rescue</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Which creates a database named <em>my_database</em> in</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span>~/my_outdir/my_database/my_database.db
+</pre></div>
+</div>
+<p>and a configuration file for later reference in</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span>~/my_outdir/my_database/config/config.pkl
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-event-number">
+<h1>The Event Number:<a class="headerlink" href="#the-event-number" title="Permalink to this headline">¶</a></h1>
+<p>The SQLite databases produced are indexed using a variable called <em>event_no</em>. The event number is an integer value that is unique within the database only, and has <strong>nothing</strong> to do with the event header information in the i3 files. This event number is used to match pulse information, reconstructions and truth information associated with each event. It is therefore the principal key used for querying the databases.´</p>
+<p><strong>Please Note</strong>: Because <em>event_no</em> is unique only within a database, you cannot use it to cross reference between different databases.</p>
+</div>
+<div class="section" id="example-usage-of-a-database">
+<h1>Example usage of a database:<a class="headerlink" href="#example-usage-of-a-database" title="Permalink to this headline">¶</a></h1>
+<p>You can check the available tables in a database by</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="lineno">1 </span><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="lineno">2 </span><span class="n">db</span> <span class="o">=</span> <span class="s1">&#39;path_to_database&#39;</span>
+<span class="lineno">3 </span>
+<span class="lineno">4 </span><span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
+<span class="lineno">5 </span>   <span class="n">cursorObj</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+<span class="lineno">6 </span>   <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Available Tables: &#39;</span><span class="p">)</span>
+<span class="lineno">7 </span>   <span class="n">cursorObj</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT name FROM sqlite_master WHERE type=&#39;table&#39;;&quot;</span><span class="p">)</span>
+<span class="lineno">8 </span>   <span class="nb">print</span><span class="p">(</span><span class="n">cursorObj</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>this will print the names of the available tables in the database. The database should contain <em>truth</em>, <em>RetroReco</em> if available, and at least one pulse map table, which carries the same name as the pulse map key, E.g. ‘SRTInIcePulses’.</p>
+<p>To extract event data we should start by extracting the available event numbers, such that we can use these to match between tables. To get the available event numbers, simply</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="lineno"> 2 </span>
+<span class="lineno"> 3 </span><span class="k">def</span> <span class="nf">extract_all_event_numbers</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+<span class="lineno"> 4 </span>   <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
+<span class="lineno"> 5 </span>      <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;from truth select event_no&#39;</span>
+<span class="lineno"> 6 </span>      <span class="n">event_numbers</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">con</span><span class="p">)</span>
+<span class="lineno"> 7 </span>   <span class="k">return</span> <span class="n">event_numbers</span>
+<span class="lineno"> 8 </span>
+<span class="lineno"> 9 </span><span class="n">db</span> <span class="o">=</span> <span class="s1">&#39;path_to_database&#39;</span>
+<span class="lineno">10 </span><span class="n">event_numbers</span> <span class="o">=</span> <span class="n">extract_all_event_numbers</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><em>event_numbers</em> is now a pandas.DataFrame containing the full list of unique event numbers in the database.</p>
+<p>Suppose we then wanted to extract the pulse information in <em>SRTInIcePulses</em> associated with the first event, we can simply</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="lineno"> 2 </span>
+<span class="lineno"> 3 </span><span class="k">def</span> <span class="nf">extract_all_event_numbers</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+<span class="lineno"> 4 </span>   <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
+<span class="lineno"> 5 </span>      <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;from truth select event_no&#39;</span>
+<span class="lineno"> 6 </span>      <span class="n">event_numbers</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">con</span><span class="p">)</span>
+<span class="lineno"> 7 </span>   <span class="k">return</span> <span class="n">event_numbers</span>
+<span class="lineno"> 8 </span>
+<span class="lineno"> 9 </span><span class="n">db</span> <span class="o">=</span> <span class="s1">&#39;path_to_database&#39;</span>
+<span class="lineno">10 </span><span class="n">event_numbers</span> <span class="o">=</span> <span class="n">extract_all_event_numbers</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+<span class="lineno">11 </span>
+<span class="lineno">12 </span><span class="n">our_event_of_interest</span> <span class="o">=</span> <span class="n">event_numbers</span><span class="p">[</span><span class="s1">&#39;event_no][0]</span>
+<span class="lineno">13 </span><span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
+<span class="lineno">14 </span>   <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;from SRTInIcePulses select * where event_no == &#39;</span><span class="o">%</span><span class="n">our_event_of_interest</span>
+<span class="lineno">15 </span>   <span class="n">pulses</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">con</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><em>pulses</em> now contain the all the extracted information associated with the specific event. If you wanted to extract all the information available in the database from the RetroReco table, all you’d have to do is to change ‘SRTInIcePulses’ with ‘RetroReco’.</p>
+<p>Suppose you wanted to extract the pulse information for a batch of events, let’s say the first 2048 events in <em>event_numbers</em>, one could</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="lineno"> 2 </span>
+<span class="lineno"> 3 </span><span class="k">def</span> <span class="nf">extract_all_event_numbers</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+<span class="lineno"> 4 </span>   <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
+<span class="lineno"> 5 </span>      <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;from truth select event_no&#39;</span>
+<span class="lineno"> 6 </span>      <span class="n">event_numbers</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">con</span><span class="p">)</span>
+<span class="lineno"> 7 </span>   <span class="k">return</span> <span class="n">event_numbers</span>
+<span class="lineno"> 8 </span>
+<span class="lineno"> 9 </span><span class="n">db</span> <span class="o">=</span> <span class="s1">&#39;path_to_database&#39;</span>
+<span class="lineno">10 </span><span class="n">event_numbers</span> <span class="o">=</span> <span class="n">extract_all_event_numbers</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+<span class="lineno">11 </span>
+<span class="lineno">12 </span><span class="n">our_events_of_interest</span> <span class="o">=</span> <span class="n">event_numbers</span><span class="p">[</span><span class="s1">&#39;event_no][0:2048]</span>
+<span class="lineno">13 </span><span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="k">as</span> <span class="n">con</span><span class="p">:</span>
+<span class="lineno">14 </span>   <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;from SRTInIcePulses select * where event_no in &#39;</span><span class="o">%</span><span class="nb">str</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">our_events_of_interest</span><span class="p">))</span>
+<span class="lineno">15 </span>   <span class="n">pulses</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">con</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-standard-truth-extraction">
+<h1>The standard truth extraction:<a class="headerlink" href="#the-standard-truth-extraction" title="Permalink to this headline">¶</a></h1>
+<p>Once the database is created, it will have a table named <strong>truth</strong>. Within the table, the following columns will be available:</p>
+<table class="colwidths-given docutils align-default" id="id1">
+<caption><span class="caption-text">Standard Truth Extraction</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Truth Column</p></th>
+<th class="head"><p>IceTray Syntax</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>energy</p></td>
+<td><p>MCInIcePrimary.energy</p></td>
+</tr>
+<tr class="row-odd"><td><p>position_x</p></td>
+<td><p>MCInIcePrimary.pos.x</p></td>
+</tr>
+<tr class="row-even"><td><p>position_y</p></td>
+<td><p>MCInIcePrimary.pos.y</p></td>
+</tr>
+<tr class="row-odd"><td><p>position_z</p></td>
+<td><p>MCInIcePrimary.pos.z</p></td>
+</tr>
+<tr class="row-even"><td><p>azimuth</p></td>
+<td><p>MCInIcePrimary.dir.azimuth</p></td>
+</tr>
+<tr class="row-odd"><td><p>zenith</p></td>
+<td><p>MCInIcePrimary.dir.zenith</p></td>
+</tr>
+<tr class="row-even"><td><p>pid</p></td>
+<td><p>MCInIcePrimary.pdg_encoding</p></td>
+</tr>
+<tr class="row-odd"><td><p>event_time</p></td>
+<td><p>frame[‘I3EventHeader’].start_time.utc_daq_time</p></td>
+</tr>
+<tr class="row-even"><td><p>sim_type</p></td>
+<td><p>genie, muongun, corsika, noise or data</p></td>
+</tr>
+<tr class="row-odd"><td><p>interaction_type</p></td>
+<td><p>frame[“I3MCWeightDict”][“InteractionType”]</p></td>
+</tr>
+<tr class="row-even"><td><p>elasticity</p></td>
+<td><p>frame[‘I3GENIEResultDict’][‘y’]</p></td>
+</tr>
+<tr class="row-odd"><td><p>RunID</p></td>
+<td><p>frame[‘I3EventHeader’].run_id</p></td>
+</tr>
+<tr class="row-even"><td><p>SubrunID</p></td>
+<td><p>frame[‘I3EventHeader’].sub_run_id</p></td>
+</tr>
+<tr class="row-odd"><td><p>EventID</p></td>
+<td><p>frame[‘I3EventHeader’].event_id</p></td>
+</tr>
+<tr class="row-even"><td><p>SubEventID</p></td>
+<td><p>frame[‘I3EventHeader’].sub_event_id</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note</strong>: Future version will allow you to specify the truth columns explicitly in the configuration.</p>
+</div>
+<div class="section" id="the-standard-pulse-extraction">
+<h1>The standard pulse extraction:<a class="headerlink" href="#the-standard-pulse-extraction" title="Permalink to this headline">¶</a></h1>
+<p>Once the database is created, it will have a table named after each of the elements in <em>pulse_keys</em>. E.g., if you pick ‘SRTInIcePulses’, a table in the database will carry this name. Within the table, the following columns will be available:</p>
+<table class="colwidths-given docutils align-default" id="id2">
+<caption><span class="caption-text">Standard Pulse Extraction</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Pulse Column</p></th>
+<th class="head"><p>IceTray</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>charge</p></td>
+<td><p>pulse.charge</p></td>
+</tr>
+<tr class="row-odd"><td><p>dom_time</p></td>
+<td><p>pulse.time</p></td>
+</tr>
+<tr class="row-even"><td><p>dom_x</p></td>
+<td><p>gcd_dict[om_key].position.x</p></td>
+</tr>
+<tr class="row-odd"><td><p>dom_y</p></td>
+<td><p>gcd_dict[om_key].position.y</p></td>
+</tr>
+<tr class="row-even"><td><p>dom_z</p></td>
+<td><p>gcd_dict[om_key].position.z</p></td>
+</tr>
+<tr class="row-odd"><td><p>width</p></td>
+<td><p>pulse.width</p></td>
+</tr>
+<tr class="row-even"><td><p>pmt_area</p></td>
+<td><p>gcd_dict[om_key].area</p></td>
+</tr>
+<tr class="row-odd"><td><p>rde</p></td>
+<td><p>frame[“I3Calibration”].dom_cal[om_key].relative_dom_eff</p></td>
+</tr>
+</tbody>
+</table>
+<p>Here <em>pulse</em> corresponds to, in the case where <em>SRTInIcePulses</em> is the pulse key:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">om_key</span> <span class="ow">in</span> <span class="n">om_keys</span><span class="p">:</span>
+   <span class="n">pulses</span> <span class="o">=</span> <span class="n">frame</span><span class="p">[</span><span class="s1">&#39;SRTInIcePulses&#39;</span><span class="p">][</span><span class="n">om_key</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>and <em>om_key</em> is the OM index available in the i3 file directly. The OM index matches pulses in i3 files with geospatial information contained in the GCD-file, which is represented here as <em>om_dict</em>.</p>
+<p><strong>Note</strong>: Future version will allow you to specify the pulse columns explicitly in the configuration.</p>
+</div>
+<div class="section" id="the-standard-retroreco-extraction">
+<h1>The standard RetroReco extraction:<a class="headerlink" href="#the-standard-retroreco-extraction" title="Permalink to this headline">¶</a></h1>
+<p>Once the database is created, it will have a table named RetroReco, which contains reconstructions from RetroReco and other associated variables with the OscNext Filtering:</p>
+<table class="colwidths-given docutils align-default" id="id3">
+<caption><span class="caption-text">Standard RetroReco Extraction</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>RetroReco Column</p></th>
+<th class="head"><p>IceTray</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>azimuth_retro</p></td>
+<td><p>frame[“L7_reconstructed_azimuth”].value</p></td>
+</tr>
+<tr class="row-odd"><td><p>zenith_retro</p></td>
+<td><p>frame[“L7_reconstructed_zenith”].value</p></td>
+</tr>
+<tr class="row-even"><td><p>time_retro</p></td>
+<td><p>frame[“L7_reconstructed_time”].value</p></td>
+</tr>
+<tr class="row-odd"><td><p>energy_retro</p></td>
+<td><p>frame[“L7_reconstructed_total_energy”].value</p></td>
+</tr>
+<tr class="row-even"><td><p>cascade_energy_retro</p></td>
+<td><p>frame[“L7_reconstructed_cascade_energy”].value</p></td>
+</tr>
+<tr class="row-odd"><td><p>track_energy_retro</p></td>
+<td><p>frame[“L7_reconstructed_track_energy”].value</p></td>
+</tr>
+<tr class="row-even"><td><p>track_length_retro</p></td>
+<td><p>frame[“L7_reconstructed_track_length”].value</p></td>
+</tr>
+<tr class="row-odd"><td><p>position_x_retro</p></td>
+<td><p>frame[“L7_reconstructed_vertex_x”].value</p></td>
+</tr>
+<tr class="row-even"><td><p>position_y_retro</p></td>
+<td><p>frame[“L7_reconstructed_vertex_y”].value</p></td>
+</tr>
+<tr class="row-odd"><td><p>position_z_retro</p></td>
+<td><p>frame[“L7_reconstructed_vertex_z”].value</p></td>
+</tr>
+<tr class="row-even"><td><p>lvl7_probnu</p></td>
+<td><p>frame[“L7_MuonClassifier_FullSky_ProbNu”].value</p></td>
+</tr>
+<tr class="row-odd"><td><p>lvl7_prob_track</p></td>
+<td><p>frame[“L7_PIDClassifier_FullSky_ProbTrack”].value</p></td>
+</tr>
+<tr class="row-even"><td><p>lvl4_probnu</p></td>
+<td><p>frame[“L4_MuonClassifier_Data_ProbNu”].value</p></td>
+</tr>
+<tr class="row-odd"><td><p>azimuth_sigma</p></td>
+<td><p>frame[“L7_retro_crs_prefit__azimuth_sigma_tot”].value</p></td>
+</tr>
+<tr class="row-even"><td><p>zenith_sigma</p></td>
+<td><p>frame[“L7_retro_crs_prefit__zenith_sigma_tot”].value</p></td>
+</tr>
+<tr class="row-odd"><td><p>energy_sigma</p></td>
+<td><p>frame[“L7_retro_crs_prefit__energy_sigma_tot”].value</p></td>
+</tr>
+<tr class="row-even"><td><p>time_sigma</p></td>
+<td><p>frame[“L7_retro_crs_prefit__time_sigma_tot”].value</p></td>
+</tr>
+<tr class="row-odd"><td><p>position_x_sigma</p></td>
+<td><p>frame[“L7_retro_crs_prefit__x_sigma_tot”].value</p></td>
+</tr>
+<tr class="row-even"><td><p>position_y_sigma</p></td>
+<td><p>frame[“L7_retro_crs_prefit__y_sigma_tot”].value</p></td>
+</tr>
+<tr class="row-odd"><td><p>position_z_sigma</p></td>
+<td><p>frame[“L7_retro_crs_prefit__z_sigma_tot”].value</p></td>
+</tr>
+<tr class="row-even"><td><p>osc_weight</p></td>
+<td><p>frame[“I3MCWeightDict”][“weight”]*</p></td>
+</tr>
+</tbody>
+</table>
 <ul class="simple">
-<li><p>Issue Tracker: github.com/$project/$project/issues</p></li>
-<li><p>Source Code: github.com/$project/$project</p></li>
+<li><p>the osc_weight is only added if the i3files contains simulated data.</p></li>
+</ul>
+<p><strong>Note</strong>: Future version will allow you to specify the RetroReco columns explicitly in the configuration.</p>
+</div>
+<div class="section" id="contribute">
+<h1>Contribute<a class="headerlink" href="#contribute" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Source Code: <a class="reference external" href="https://github.com/RasmusOrsoe/I3ToSQLite/">https://github.com/RasmusOrsoe/I3ToSQLite/</a></p></li>
 </ul>
 </div>
 <div class="section" id="support">
-<h2>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h2>
-<p>If you are having issues, please let us know.
-We have a mailing list located at: <a class="reference external" href="mailto:project&#37;&#52;&#48;google-groups&#46;com">project<span>&#64;</span>google-groups<span>&#46;</span>com</a></p>
+<h1>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h1>
+<p>Join IceCube Slack Channel #I3ToSQLite for help</p>
 </div>
 <div class="section" id="license">
-<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
-<p>The project is licensed under the BSD license.</p>
-</div>
+<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<p>The project is licensed under the MIT license.</p>
 </div>
 
 
+           </div>
+           
           </div>
-          
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Rasmus Ørsøe.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="#">I3ToSQLite</a></h1>
 
+    </section>
 
+  </div>
+  
 
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
 
-
-
-
-
-<h3>Navigation</h3>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="#">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2021, Rasmus Ørsøe.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/index.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
+  
+  
     
+   
 
-    
-  </body>
+</body>
 </html>
