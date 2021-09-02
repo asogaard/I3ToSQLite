@@ -16,42 +16,40 @@ def Build_Configuration(paths, outdir, workers, pulse_keys, db_name, gcd_rescue,
         os.makedirs(dictionary_path)
     except:
         notimportant = 0
-    try:
-        os.makedirs('tmp/config')
-    except:
-        notimportant = 0
 
     with open(dictionary_path + '/config.pkl', 'wb') as handle:
         pickle.dump(dictionary, handle, protocol=2) 
-    with open('tmp/config/config.pkl', 'wb') as handle:
-        pickle.dump(dictionary, handle, protocol=2)              
-    return dictionary_path + '/config.pkl'
-def MakeDir():
+    
+    print(dictionary_path)              
+    return dictionary_path
+def MakeDir(coms_path):
     try:
-        os.makedirs('tmp/coms')
+        os.makedirs(coms_path)
     except:
         notimportant = 0
-def Write_Handler(cvmfs_setup_path, cvmfs_shell_path):
-    CODE = "eval `%s` \n%s ./tmp/coms/run_extraction.sh"%(cvmfs_setup_path,cvmfs_shell_path)
-    text_file = open("tmp/coms/handler.sh", "w")
-    text_file.write(CODE)
-    text_file.close()
-    os.system("chmod 755 tmp/coms/handler.sh")
+    return coms_path
 
-def Write_Executer():
-    path = (anchor.__file__).split('anchor.py')[0]
-    CODE = "python %sCreateTemporaryDatabases.py && python %sMergeTemporaryDatabases.py && exit"%(path,path)
-    text_file = open("tmp/coms/run_extraction.sh", "w")
+def Write_Handler(cvmfs_setup_path, cvmfs_shell_path, coms_path):
+    CODE = "eval `%s` \n%s %s/run_extraction.sh"%(cvmfs_setup_path,cvmfs_shell_path, coms_path)
+    text_file = open("%s/handler.sh"%coms_path, "w")
     text_file.write(CODE)
     text_file.close()
-    os.system("chmod 755 tmp/coms/run_extraction.sh")
+    os.system("chmod 755 %s/handler.sh"%coms_path)
+
+def Write_Executer(config_path, coms_path):
+    path = (anchor.__file__).split('anchor.py')[0]
+    CODE = "python %sCreateTemporaryDatabases.py --config %s && python %sMergeTemporaryDatabases.py --config %s && exit"%(path,config_path,path,config_path)
+    text_file = open("%s/run_extraction.sh"%coms_path, "w")
+    text_file.write(CODE)
+    text_file.close()
+    os.system("chmod 755 %s/run_extraction.sh"%coms_path)
 
 def CreateDatabase(paths, outdir, workers, cvmfs_setup_path, cvmfs_shell_path, db_name, pulse_keys, gcd_rescue, verbose = 1):
-    configuration_path = Build_Configuration(paths, outdir, workers, pulse_keys,db_name, gcd_rescue, verbose)
-    MakeDir()
-    Write_Executer()
-    Write_Handler(cvmfs_setup_path, cvmfs_shell_path)
-    os.system('./tmp/coms/handler.sh')
+    config_path = Build_Configuration(paths, outdir, workers, pulse_keys,db_name, gcd_rescue, verbose)
+    coms_path = MakeDir(outdir + '/%s/config'%db_name)
+    Write_Executer(config_path, coms_path)
+    Write_Handler(cvmfs_setup_path, cvmfs_shell_path, coms_path)
+    os.system('%s/handler.sh'%coms_path)
 
 
 

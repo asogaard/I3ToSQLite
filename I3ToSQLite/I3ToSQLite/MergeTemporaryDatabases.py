@@ -6,6 +6,13 @@ import sqlite3
 import time
 import pickle
 from tqdm import tqdm
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-config", "--config", type=str, required=True)
+args = parser.parse_args()
+
+
 def fetch_temps(path):
     out = []
     files = os.listdir(path)
@@ -67,7 +74,7 @@ def Run_SQL_Code(database, CODE):
     return
 
 def Attach_Index(database, table_name):
-    CODE = "PRAGMA foreign_keys=off;\nBEGIN TRANSACTION;\nCREATE INDEX event_no ON {} (event_no);\nCOMMIT TRANSACTION;\nPRAGMA foreign_keys=on;".format(table_name)
+    CODE = "PRAGMA foreign_keys=off;\nBEGIN TRANSACTION;\nCREATE INDEX event_no_{} ON {} (event_no);\nCOMMIT TRANSACTION;\nPRAGMA foreign_keys=on;".format(table_name,table_name)
     Run_SQL_Code(database,CODE)
     return
 
@@ -95,21 +102,25 @@ def CreateTable(database,table_name, columns, is_pulse_map = False):
     CODE = "PRAGMA foreign_keys=off;\nCREATE TABLE {} ({});\nPRAGMA foreign_keys=on;".format(table_name,query_columns) 
     Run_SQL_Code(database, CODE)
     if is_pulse_map:
-        try:
-            Attach_Index(database,table_name)
-        except:
-            notimportant = 0
+        #try:
+        print(table_name)
+        print('attaching indexs')
+        Attach_Index(database,table_name)
+        #except:
+        #    notimportant = 0
     return
 
 def Create_Empty_Tables(database,pulse_map_keys,truth_columns, pulse_map_columns, retro_columns):
-    for pulse_map_key in pulse_map_keys:
-        # Creates the pulse map tables
-        print('Creating Empty %s Table'%pulse_map_key)
-        CreateTable(database, pulse_map_key,pulse_map_columns[pulse_map_key], is_pulse_map = True)
+    
     print('Creating Empty Truth Table')
     CreateTable(database, 'truth', truth_columns, is_pulse_map = False) # Creates the truth table containing primary particle attributes and RetroReco reconstructions
     print('Creating Empty RetroReco Table')
     CreateTable(database, 'RetroReco',retro_columns, is_pulse_map = False) # Creates the RetroReco Table with reconstuctions and associated values.
+    
+    for pulse_map_key in pulse_map_keys:
+        # Creates the pulse map tables
+        print('Creating Empty %s Table'%pulse_map_key)
+        CreateTable(database, pulse_map_key,pulse_map_columns[pulse_map_key], is_pulse_map = True)
     return
 
 def Submit_Truth(database, truth):
@@ -150,8 +161,8 @@ def PickleCleaner(List):
         clean_list.append(str(element))
     return clean_list
 
-def Extract_Config():
-    with open('tmp/config/config.pkl', 'rb') as handle:
+def Extract_Config(config_path):
+    with open('%s/config.pkl'%config_path, 'rb') as handle:
         config = pickle.load(handle)  
     paths = PickleCleaner(config['paths'])
     
@@ -198,7 +209,7 @@ def CreateDatabase(database_name,outdir, pulse_map_keys):
     return
 
 
-paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth, start_time = Extract_Config()
+paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth, start_time = Extract_Config(args.config)
 CreateDatabase(db_name, outdir, pulse_keys)
 
 print('Database Creation Successful!')

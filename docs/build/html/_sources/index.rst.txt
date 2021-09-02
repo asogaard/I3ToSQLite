@@ -334,6 +334,24 @@ Once the database is created, it will have a table named RetroReco, which contai
 
 **Note**: Future version will allow you to specify the RetroReco columns explicitly in the configuration.
 
+FAQ:
+========
+* My pulse map table is empty - why is that?
+   *This is likely because the pulse map is not present in the i3 files you specified. Check for typos!*
+
+* I'd like to modify the truth variables selected for extraction, how do I do this?
+   *This is currently not possible, but will be added as a feature in the next update.*
+
+* I'd like to modify the RetroReco variables selected for extraction, how do I do this?
+   *This is currently not possible, but will be added as a feature in the next update.*
+
+* I'd like to modify the pulse map variables selected for extraction, how do I do this?
+   *This is currently not possible, but will be added as a feature in the next update.*   
+
+* What can I do to optimize database creation time?
+
+  *The biggest contributing factor is the amount of pulse map keys that you select for extraction. Also, because the uncleaned pulses contain more pulses, these typically takes a longer time to extract. Additionally, because the i3-files are simply distributed evenly amongst the cores, without taking into account the amount of PFrames in each, its possible that sometimes 90% of the cores will finish early while the remaining is working through larger i3 files.*
+
 Contribute
 ========
 

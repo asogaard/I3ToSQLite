@@ -100,6 +100,7 @@
 <li><a class="reference internal" href="#the-standard-truth-extraction">The standard truth extraction:</a></li>
 <li><a class="reference internal" href="#the-standard-pulse-extraction">The standard pulse extraction:</a></li>
 <li><a class="reference internal" href="#the-standard-retroreco-extraction">The standard RetroReco extraction:</a></li>
+<li><a class="reference internal" href="#faq">FAQ:</a></li>
 <li><a class="reference internal" href="#contribute">Contribute</a></li>
 <li><a class="reference internal" href="#support">Support</a></li>
 <li><a class="reference internal" href="#license">License</a></li>
@@ -550,6 +551,34 @@
 <li><p>the osc_weight is only added if the i3files contains simulated data.</p></li>
 </ul>
 <p><strong>Note</strong>: Future version will allow you to specify the RetroReco columns explicitly in the configuration.</p>
+</div>
+<div class="section" id="faq">
+<h1>FAQ:<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><dl class="simple">
+<dt>My pulse map table is empty - why is that?</dt><dd><p><em>This is likely because the pulse map is not present in the i3 files you specified. Check for typos!</em></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>I’d like to modify the truth variables selected for extraction, how do I do this?</dt><dd><p><em>This is currently not possible, but will be added as a feature in the next update.</em></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>I’d like to modify the RetroReco variables selected for extraction, how do I do this?</dt><dd><p><em>This is currently not possible, but will be added as a feature in the next update.</em></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>I’d like to modify the pulse map variables selected for extraction, how do I do this?</dt><dd><p><em>This is currently not possible, but will be added as a feature in the next update.</em></p>
+</dd>
+</dl>
+</li>
+<li><p>What can I do to optimize database creation time?</p>
+<p><em>The biggest contributing factor is the amount of pulse map keys that you select for extraction. Also, because the uncleaned pulses contain more pulses, these typically takes a longer time to extract. Additionally, because the i3-files are simply distributed evenly amongst the cores, without taking into account the amount of PFrames in each, its possible that sometimes 90% of the cores will finish early while the remaining is working through larger i3 files.</em></p>
+</li>
+</ul>
 </div>
 <div class="section" id="contribute">
 <h1>Contribute<a class="headerlink" href="#contribute" title="Permalink to this headline">¶</a></h1>

@@ -11,7 +11,14 @@ import sqlalchemy
 import time
 from multiprocessing import Pool
 import pickle
-#icetray.I3Logger.global_logger = icetray.I3NullLogger()
+import argparse
+import sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-config", "--config", type=str, required=True)
+args = parser.parse_args()
+
+
 
 def Contains_RetroReco(frame):
     try:
@@ -248,6 +255,7 @@ def WriteDicts(settings):
         if verbose > 0:
             print('Worker %s Reading %s'%(id,input_file.split('/')[-1]))
             print(input_file)
+            sys.stdout.flush()
         gcd_count  +=1
     
         while i3_file.more() :
@@ -281,6 +289,7 @@ def WriteDicts(settings):
                 if len(retros)>0 :
                     retro_big   = retro_big.append(retro, ignore_index = True, sort = True)
                 if len(truth_big) >= max_dict_size:
+                    print('saving')
                     engine = sqlalchemy.create_engine('sqlite:///'+outdir + '/%s/tmp/worker-%s-%s.db'%(db_name,id,output_count))
                     truth_big.to_sql('truth',engine,index= False, if_exists = 'append')
                     if len(retro_big)> 0:
@@ -296,6 +305,7 @@ def WriteDicts(settings):
         if verbose > 0:
             print('Worker %s has finished %s/%s I3 files.'%(id, file_counter, len(input_files)))
     if (len(feature_big) > 0):
+        print('saving eof')
         engine = sqlalchemy.create_engine('sqlite:///'+outdir +  '/%s/tmp/worker-%s-%s.db'%(db_name,id,output_count))
         truth_big.to_sql('truth',engine,index= False, if_exists = 'append')
         if len(retro_big)> 0:
@@ -363,7 +373,17 @@ def WalkDirectory(dir, extensions):
             gcds_folder.append(gcd_folder)
         files_list.extend(i3files_folder)
         GCD_list.extend(gcds_folder)
+    
+    files_list, GCD_list = PairWiseShuffle(files_list, GCD_list)
     return files_list, GCD_list
+
+def PairWiseShuffle(files_list, gcd_list):
+    df = pd.DataFrame({'i3': files_list, 'gcd': gcd_list})
+    df_shuffled = df.sample(frac = 1)
+    i3_shuffled = df_shuffled['i3'].tolist()
+    gcd_shuffled = df_shuffled['gcd'].tolist()
+    return i3_shuffled, gcd_shuffled
+
 
 def FindFiles(paths,outdir,db_name,gcd_rescue, extensions = None):
     print('Counting files in: \n%s\n This might take a few minutes...'%paths)
@@ -379,10 +399,10 @@ def FindFiles(paths,outdir,db_name,gcd_rescue, extensions = None):
         input_files.extend(input_files_mid)
         gcd_files.extend(gcd_files_mid)
 
-    
+    input_files, gcd_files = PairWiseShuffle(input_files, gcd_files)
     Save_Filenames(input_files, outdir, db_name)
-
     return input_files, gcd_files
+    
 def Save_Filenames(input_files,outdir, db_name):
     input_files = pd.DataFrame(input_files)
     input_files.columns = ['filename']
@@ -405,8 +425,8 @@ def PickleCleaner(List):
         clean_list.append(str(element))
     return clean_list
 
-def Extract_Config():
-    with open('tmp/config/config.pkl', 'rb') as handle:
+def Extract_Config(config_path):
+    with open('%s/config.pkl'%config_path, 'rb') as handle:
         config = pickle.load(handle)  
     paths = PickleCleaner(config['paths'])
     
@@ -429,10 +449,10 @@ def Extract_Config():
         custom_truth    = None
     return paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth, gcd_rescue, verbose
 def Transmit_Start_Time(start_time,config_path):
-    with open(config_path, 'rb') as handle:
+    with open('%s/config.pkl'%config_path, 'rb') as handle:
         config = pickle.load(handle)
     config['start_time'] = start_time
-    with open(config_path , 'wb') as handle:
+    with open('%s/config.pkl'%config_path, 'wb') as handle:
         pickle.dump(config, handle, protocol=2)  
     return
 
@@ -443,7 +463,9 @@ def PrintMessage(workers, input_files):
     print('----------------------')
 def CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,config_path, start_time,db_name,gcd_rescue,verbose,max_dictionary_size = 10000, custom_truth = None):
     if __name__ == "__main__" :
-        start_time = time.time()    
+        start_time = time.time()
+        if verbose == 0:
+            icetray.I3Logger.global_logger = icetray.I3NullLogger()    
         directory_exists = CreateOutDirectory(outdir + '/%s/tmp'%db_name)
         input_files, gcd_files = FindFiles(paths, outdir,db_name,gcd_rescue)
         if workers > len(input_files):
@@ -463,13 +485,15 @@ def CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,config_path, sta
         p.map_async(WriteDicts, settings)
         p.close()
         p.join()
+        print('transmitting..')
         Transmit_Start_Time(start_time, config_path)
 
 
 start_time = time.time()
 
-paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth, gcd_rescue, verbose = Extract_Config()
-CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,'tmp/config/config.pkl', start_time,db_name,gcd_rescue,verbose, max_dictionary_size, custom_truth)
+paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth, gcd_rescue, verbose = Extract_Config(args.config)
+print(args.config)
+CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,args.config, start_time,db_name,gcd_rescue,verbose, max_dictionary_size, custom_truth)
 
 
 
