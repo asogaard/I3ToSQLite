@@ -1,0 +1,12 @@
+README.md
+setup.py
+I3ToSQLite/CreateTemporaryDatabases.py
+I3ToSQLite/MergeTemporaryDatabases.py
+I3ToSQLite/Tools.py
+I3ToSQLite/__init__.py
+I3ToSQLite/anchor.py
+I3ToSQLite.egg-info/PKG-INFO
+I3ToSQLite.egg-info/SOURCES.txt
+I3ToSQLite.egg-info/dependency_links.txt
+I3ToSQLite.egg-info/requires.txt
+I3ToSQLite.egg-info/top_level.txt

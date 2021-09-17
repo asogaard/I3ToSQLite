@@ -9,7 +9,7 @@ setup(
     author_email='RasmusOrsoe@gmail.com',
     license='MIT',
     packages=['I3ToSQLite'],
-    package_dir = {'':'I3ToSQLite'},
+    #package_dir = {'':'I3ToSQLite'},
     install_requires=['sqlalchemy',
                       'pandas',
                       'numpy',

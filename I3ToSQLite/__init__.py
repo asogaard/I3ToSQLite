@@ -1,5 +1,5 @@
 name = 'I3ToSQLite'
-from .tools import *
+from .Tools import *
 from .CreateTemporaryDatabases import *
 from .MergeTemporaryDatabases import *
 __version__ = "0.1.62"
