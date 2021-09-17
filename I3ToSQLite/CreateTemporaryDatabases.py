@@ -2,8 +2,12 @@
 
 '''
 import os, glob
-from icecube import dataclasses, icetray, dataio
-from icecube import genie_icetray
+try:
+    from icecube import dataclasses, icetray, dataio
+    from icecube import genie_icetray
+except ModuleNotFoundError:
+    # Not running in IceTray
+    pass
 import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine
@@ -16,7 +20,6 @@ import sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-config", "--config", type=str, required=True)
-args = parser.parse_args()
 
 
 
@@ -335,7 +338,7 @@ def HasExtension(file, extensions):
     else:
         return False
 
-def WalkDirectory(dir, extensions):
+def WalkDirectory(dir, extensions, gcd_rescue):
     files_list = []
     GCD_list   = []
     root,folders,root_files = next(os.walk(dir))
@@ -395,7 +398,7 @@ def FindFiles(paths,outdir,db_name,gcd_rescue, extensions = None):
     gcd_files_mid = []
     gcd_files = []
     for path in paths:
-        input_files_mid, gcd_files_mid = WalkDirectory(path, extensions)
+        input_files_mid, gcd_files_mid = WalkDirectory(path, extensions, gcd_rescue)
         input_files.extend(input_files_mid)
         gcd_files.extend(gcd_files_mid)
 
@@ -489,12 +492,20 @@ def CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,config_path, sta
         Transmit_Start_Time(start_time, config_path)
 
 
-start_time = time.time()
+# Main function definition
+def main ():
+    args = parser.parse_args()
 
-paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth, gcd_rescue, verbose = Extract_Config(args.config)
-print(args.config)
-CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,args.config, start_time,db_name,gcd_rescue,verbose, max_dictionary_size, custom_truth)
+    start_time = time.time()
 
+    paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth, gcd_rescue, verbose = Extract_Config(args.config)
+    print(args.config)
+    CreateTemporaryDatabases(paths, outdir, workers, pulse_keys,args.config, start_time,db_name,gcd_rescue,verbose, max_dictionary_size, custom_truth)
+
+
+# Main function call
+if __name__ == '__main__':
+    main()
 
 
 

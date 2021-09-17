@@ -10,7 +10,6 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-config", "--config", type=str, required=True)
-args = parser.parse_args()
 
 
 def fetch_temps(path):
@@ -209,9 +208,17 @@ def CreateDatabase(database_name,outdir, pulse_map_keys):
     return
 
 
-paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth, start_time = Extract_Config(args.config)
-CreateDatabase(db_name, outdir, pulse_keys)
+# Main function definition
+def main ():
+    args = parser.parse_args()
 
-print('Database Creation Successful!')
-print('Time Elapsed: %s minutes'%((time.time() - start_time)/60))
+    paths, outdir, workers, pulse_keys, db_name, max_dictionary_size, custom_truth, start_time = Extract_Config(args.config)
+    CreateDatabase(db_name, outdir, pulse_keys)
 
+    print('Database Creation Successful!')
+    print('Time Elapsed: %s minutes'%((time.time() - start_time)/60))
+
+
+# Main function call
+if __name__ == '__main__':
+    main()
