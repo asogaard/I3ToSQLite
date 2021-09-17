@@ -37,7 +37,7 @@ def Write_Handler(cvmfs_setup_path, cvmfs_shell_path, coms_path):
 
 def Write_Executer(config_path, coms_path):
     directory_path = os.path.dirname(I3ToSQLite.__file__)
-    code = "python {0}/CreateTemporaryDatabases.py --config {1} && python {0}/MergeTemporaryDatabases.py --config {1} && exit".format(directory_path, config_path)
+    code = "python {0}/create_temporary_databases.py --config {1} && python {0}/merge_temporary_databases.py --config {1} && exit".format(directory_path, config_path)
     text_file = open("%s/run_extraction.sh"%coms_path, "w")
     text_file.write(code)
     text_file.close()
