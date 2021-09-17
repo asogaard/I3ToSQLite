@@ -5,7 +5,7 @@ This script ...
 
 # Import(s)
 from os.path import expanduser
-from I3ToSQLite.Tools import CreateDatabase
+from I3ToSQLite.tools import CreateDatabase
 
 # Global variable(s)
 CVMFS = "/cvmfs/icecube.opensciencegrid.org"
