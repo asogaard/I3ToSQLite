@@ -5,7 +5,7 @@ This script ...
 
 # Import(s)
 from os.path import expanduser
-from I3ToSQLite.tools import CreateDatabase
+from I3ToSQLite.tools import create_database
 
 # Global variable(s)
 CVMFS = "/cvmfs/icecube.opensciencegrid.org"
@@ -23,7 +23,7 @@ def main():
     gcd_rescue = expanduser("~/gnn/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz")  # pylint: disable=line-too-long
     pulse_keys = ["SRTInIcePulses"]
 
-    CreateDatabase(
+    create_database(
         paths,
         outdir,
         workers,
