@@ -2,3 +2,4 @@
 **.pyc
 .ipynb_checkpoints
 I3ToSQLite/__pycache__
+I3ToSQLite.egg-info
